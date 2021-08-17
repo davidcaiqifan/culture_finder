@@ -1,1 +1,16 @@
 python-telegram-bot==12.7
+
+beautifulsoup4~=4.9.3
+soupsieve~=2.2.1
+requests~=2.26.0
+pip~=21.1.2
+wheel~=0.36.2
+cryptography~=3.4.7
+tornado~=6.1
+future~=0.18.2
+certifi~=2021.5.30
+urllib3~=1.26.6
+idna~=3.2
+decorator~=5.0.9
+pycparser~=2.20
+setuptools~=57.0.0
