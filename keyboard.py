@@ -12,8 +12,7 @@ import logging
 from mal import Anime, AnimeSearch
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, CallbackContext, MessageHandler, Filters
-
-import bot
+import telebot
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
@@ -118,4 +117,4 @@ def status_command(res, query):
 
 
 def image_command(res, query):
-    bot.send_photo(query.id, res.image_url)
+    telebot.send_photo(query.id, res.image_url)
