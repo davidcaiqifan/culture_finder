@@ -1,5 +1,6 @@
 import logging
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler, CallbackContext
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 import os
 
 PORT = int(os.environ.get('PORT', 5000))
@@ -16,10 +17,32 @@ TOKEN = '1912308592:AAHFpjHjA0LpS5qloaMMZs7jauoKHyEaP-U'
 def start(update, context):
     """Send a message when the command /start is issued."""
     update.message.reply_text('Hi!')
+    """Sends a message with three inline buttons attached."""
+    keyboard = [
+        [
+            InlineKeyboardButton("Option 1", callback_data='1'),
+            InlineKeyboardButton("Option 2", callback_data='2'),
+        ],
+        [InlineKeyboardButton("Option 3", callback_data='3')],
+    ]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    update.message.reply_text('Please choose:', reply_markup=reply_markup)
 
 def help(update, context):
     """Send a message when the command /help is issued."""
     update.message.reply_text('Help!')
+
+def button(update: Update, context: CallbackContext) -> None:
+    """Parses the CallbackQuery and updates the message text."""
+    query = update.callback_query
+
+    # CallbackQueries need to be answered, even if no notification to the user is needed
+    # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
+    query.answer()
+
+    query.edit_message_text(text=f"Selected option: {query.data}")
 
 def echo(update, context):
     """Echo the user message."""
@@ -41,6 +64,7 @@ def main():
 
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
+    updater.dispatcher.add_handler(CallbackQueryHandler(button))
     dp.add_handler(CommandHandler("help", help))
 
     # on noncommand i.e message - echo the message on Telegram
