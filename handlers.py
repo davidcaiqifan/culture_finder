@@ -4,35 +4,10 @@ from mal import AnimeSearch, Anime
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import CallbackContext
 import telebot
+from genre import *
 
 
-
-def animesearch(update, context):
-    try:
-        search = AnimeSearch(update.message.text).results
-        malid = search[0].mal_id
-        anime = Anime(malid)
-        # context.bot.send_message(chat_id=update.effective_chat.id, text=str(anime.title_english) + ' is rated ' + str(anime.score))
-        keyboard = [
-            [InlineKeyboardButton(str(Anime(search[0].mal_id).title_english), callback_data=str(search[0].mal_id))],
-            [InlineKeyboardButton(str(Anime(search[1].mal_id).title_english), callback_data=str(search[1].mal_id)), ],
-            [InlineKeyboardButton(str(Anime(search[2].mal_id).title_english), callback_data=str(search[2].mal_id))],
-            [InlineKeyboardButton(str(Anime(search[3].mal_id).title_english), callback_data=str(search[3].mal_id))],
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        update.message.reply_text('Please choose:', reply_markup=reply_markup)
-    except ValueError:
-        context.bot.send_message(chat_id=update.effective_chat.id, text='No anime found')
-
-    keyboard = [
-        [
-            InlineKeyboardButton("Anime", callback_data='1'),
-            InlineKeyboardButton("Manga", callback_data='2'),
-        ],
-        [InlineKeyboardButton("Web Comics", callback_data='3')],
-    ]
-
-#search function after random anime is generated
+# search function after random anime is generated
 def animesearch(query):
     handle_info(query, False)
 
@@ -54,7 +29,6 @@ def animeinfo(update, context):
     update.message.reply_text(anime, reply_markup=reply_markup)
 
 
-
 def animekeyboard(update, context: CallbackContext) -> None:
     keyboard = [
         [
@@ -64,7 +38,6 @@ def animekeyboard(update, context: CallbackContext) -> None:
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     update.message.reply_text('Please choose:', reply_markup=reply_markup)
-
 
 
 def help_command(update: Update, context: CallbackContext) -> None:
@@ -101,14 +74,14 @@ def button(update: Update, context: CallbackContext) -> None:
 
     elif query.data[-6:] == 'status':
         status_command(query.data[:-7], query)
-    elif query.data == 'getrecommendations' or query.data == 'donotlike' :
+    elif query.data == 'getrecommendations' or query.data == 'donotlike' or query.data == 'dislike':
         query.edit_message_text(text='Which genre do you like?', reply_markup=animegenres())
         # context.bot.send_message(chat_id=update.effective_chat.id, text='You should watch Naruto')
-    elif 'genre' in query.data:
+    elif 'genre'in query.data:
         # slicedgenre = query.data.replace('genre', '').lower()
         # value = random.choice(list(eval(slicedgenre).values()))
         animesearch(query)
-        #context.bot.send_message(chat_id=update.effective_chat.id, text=str(value))
+        # context.bot.send_message(chat_id=update.effective_chat.id, text=str(value))
     else:
         keyboard = [
             [InlineKeyboardButton('info', callback_data=query.data + ' info')],
@@ -132,28 +105,24 @@ def start(update: Update, context: CallbackContext) -> None:
 
 def search(update: Update, context: CallbackContext) -> None:
     try:
+        update.message.reply_text('Searching... Please wait...')
         search = AnimeSearch(update.message.text.replace('search', '')).results
-        malid = search[0].mal_id
-        anime = Anime(malid)
-        # context.bot.send_message(chat_id=update.effective_chat.id, text=str(anime.title_english) + ' is rated ' + str(anime.score))
-        keyboard = [
-            [InlineKeyboardButton(str(Anime(search[0].mal_id).title_english), callback_data=str(search[0].mal_id))],
-            [InlineKeyboardButton(str(Anime(search[1].mal_id).title_english), callback_data=str(search[1].mal_id)), ],
-            [InlineKeyboardButton(str(Anime(search[2].mal_id).title_english), callback_data=str(search[2].mal_id))],
-            [InlineKeyboardButton(str(Anime(search[3].mal_id).title_english), callback_data=str(search[3].mal_id))],
-        ]
+        keyboard = []
+        print(len(search))
+        for x in range(5):
+            print(str(Anime(search[x].mal_id).title_english))
+            if str(Anime(search[x].mal_id).title_english) == "None":
+                keyboard.append(
+                    [InlineKeyboardButton(str(Anime(search[x].mal_id).title_japanese),
+                                          callback_data=str(search[x].mal_id))])
+            else:
+                keyboard.append(
+                    [InlineKeyboardButton(str(Anime(search[x].mal_id).title_english),
+                                          callback_data=str(search[x].mal_id))])
         reply_markup = InlineKeyboardMarkup(keyboard)
         update.message.reply_text('Please choose:', reply_markup=reply_markup)
     except ValueError:
         context.bot.send_message(chat_id=update.effective_chat.id, text='No anime found')
-
-    keyboard = [
-        [
-            InlineKeyboardButton("Anime", callback_data='1'),
-            InlineKeyboardButton("Manga", callback_data='2'),
-        ],
-        [InlineKeyboardButton("Web Comics", callback_data='3')],
-    ]
 
 
 def animegenres():
@@ -168,19 +137,25 @@ def animegenres():
     reply_markup = InlineKeyboardMarkup(keyboard)
     return reply_markup
 
+
 def handle_info(query, boolean):
-    if boolean :
+    if boolean:
         anime = query.data[:-5]
 
-    else :
+    else:
+        print(query.data)
         slicedgenre = query.data[5:].lower()
+        # if query.data.find('dislike') == 0:
+        #     slicedgenre = query.data[7:].lower()
         value = random.choice(list(eval(slicedgenre).values()))
         search = AnimeSearch(value).results
         anime = search[0].mal_id
+        name = search[0].title
         website = search[0].url
         # req_body = request.get_json()
         # user = get_user_from_request(req_body)
         # bot.send_message(user.id, str(website))
+
 
     keyboard = [
         [InlineKeyboardButton('synopsis', callback_data=str(anime) + ' synopsis')],
@@ -189,13 +164,17 @@ def handle_info(query, boolean):
         [InlineKeyboardButton('air date', callback_data=str(anime) + ' air date')],
         [InlineKeyboardButton('status', callback_data=str(anime) + ' status')],
     ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    query.edit_message_text(text='Choose one:', reply_markup=reply_markup)
 
-    #else:
-     #   anime = AnimeSearch(int(query.data))
-      #  query.edit_message_text(text=f"{anime.title} is rated: {anime.score}")
-        #query.edit_message_text(text=f"Selected option: {query.data}")
+    if not boolean:
+        keyboard.append([InlineKeyboardButton('Nope', callback_data='dislike')])
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    query.edit_message_text(text=name, reply_markup=reply_markup)
+
+    # else:
+    #   anime = AnimeSearch(int(query.data))
+    #  query.edit_message_text(text=f"{anime.title} is rated: {anime.score}")
+    # query.edit_message_text(text=f"Selected option: {query.data}")
+
 
 def handle_genre():
     return ''
@@ -220,8 +199,10 @@ def air_date_command(res, query):
 def status_command(res, query):
     query.edit_message_text(text=Anime(res).title + ' status:\n' + Anime(res).status + "\n \n" + Anime(res).url)
 
+
 def image_command(res, query):
     telebot.send_photo(query.id, res.image_url)
+
 
 # def image_command(res, query):
 #     bot.send_photo(query.id, res.image_url)
@@ -238,5 +219,3 @@ genres = ["Action"
     , 'Romance'
     , 'SciFi'
     , 'Sports']
-
-
