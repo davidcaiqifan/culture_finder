@@ -85,8 +85,8 @@ def main():
     updater.start_webhook(listen="0.0.0.0",
                           port=int(PORT),
                           url_path=TOKEN)
-    # updater.bot.setWebhook('https://desolate-oasis-96844.herokuapp.com/' + TOKEN)
-    updater.bot.setWebhook('https://6e1af34d0be5.ngrok.io/' + TOKEN)
+    updater.bot.setWebhook('https://desolate-oasis-96844.herokuapp.com/' + TOKEN)
+    # updater.bot.setWebhook('https://6e1af34d0be5.ngrok.io/' + TOKEN)
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
