@@ -2,8 +2,6 @@ import logging
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import os
 
-from keyboard import start
-
 PORT = int(os.environ.get('PORT', 5000))
 
 # Enable logging
@@ -15,9 +13,9 @@ TOKEN = '1912308592:AAHFpjHjA0LpS5qloaMMZs7jauoKHyEaP-U'
 
 # Define a few command handlers. These usually take the two arguments update and
 # context. Error handlers also receive the raised TelegramError object in error.
-# def start(update, context):
-#     """Send a message when the command /start is issued."""
-#     update.message.reply_text('Hi!')
+def start(update, context):
+    """Send a message when the command /start is issued."""
+    update.message.reply_text('Hi!')
 
 def help(update, context):
     """Send a message when the command /help is issued."""
